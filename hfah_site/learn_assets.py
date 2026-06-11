@@ -1,10 +1,22 @@
 """Shared static assets for the learn site (trading floor iframe, etc.)."""
 from __future__ import annotations
 
+import os
 import shutil
 from pathlib import Path
 
-WEB_ROOT = Path(__file__).resolve().parents[1] / "web"
+
+def _web_root() -> Path:
+    env = os.environ.get("HFAH_SITE_ROOT", "").strip()
+    if env:
+        return Path(env).resolve() / "web"
+    local = Path(__file__).resolve().parents[1] / "web"
+    if local.is_dir():
+        return local
+    raise RuntimeError("Set HFAH_SITE_ROOT to your hedge-fund-at-home-site checkout.")
+
+
+WEB_ROOT = _web_root()
 LEARN_WEB = WEB_ROOT / "learn"
 
 SHARED_FILES = ("api-client.js", "trading-floor.js", "pairs-floor.js", "styles.css")
