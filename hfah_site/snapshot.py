@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-import os
-import sys
-from pathlib import Path
 from typing import Any
 
 from hedgekit.broker.simulated import SimulatedBroker
@@ -12,24 +9,12 @@ from hedgekit.risk.gate import RiskGate
 from hedgekit.strategy.base import StrategyContext
 from hedgekit.strategy.registry import load_strategy
 
-
-def _toolkit_root() -> Path:
-    env = os.environ.get("HFAH_TOOLKIT_ROOT", "").strip()
-    if env:
-        return Path(env).resolve()
-    sibling = Path(__file__).resolve().parents[2].parent / "hedge-fund-at-home"
-    if (sibling / "hedgekit").is_dir():
-        return sibling.resolve()
-    return Path(__file__).resolve().parents[2]
-
-
-_ROOT = _toolkit_root()
-if str(_ROOT) not in sys.path:
-    sys.path.insert(0, str(_ROOT))
+from hfah_site.paths import ensure_toolkit_on_path
 
 
 def build_trading_snapshot(start: str, end: str) -> dict[str, Any]:
     """Run a simulated walk and return chart-friendly series (education only)."""
+    ensure_toolkit_on_path()
     settings = get_settings()
     strategy = load_strategy(settings.strategy)
     broker = SimulatedBroker()

@@ -13,7 +13,8 @@ def _web_root() -> Path:
     local = Path(__file__).resolve().parents[1] / "web"
     if local.is_dir():
         return local
-    raise RuntimeError("Set HFAH_SITE_ROOT to your hedge-fund-at-home-site checkout.")
+    # API-only on Render: static UI is on Hostinger; web/ is not in this repo.
+    return local
 
 
 WEB_ROOT = _web_root()

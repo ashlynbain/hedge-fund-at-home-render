@@ -14,8 +14,10 @@ from urllib.parse import parse_qs, unquote, urlparse
 
 from hfah_site.learn_assets import WEB_ROOT as _ASSET_WEB_ROOT
 from hfah_site.learn_assets import build_trading_floor_html
+from hfah_site.paths import ensure_toolkit_on_path, toolkit_root
 
 import click
+
 
 def _site_root() -> Path:
     env = os.environ.get("HFAH_SITE_ROOT", "").strip()
@@ -32,27 +34,18 @@ SITE_ROOT = _site_root()
 WEB_ROOT = SITE_ROOT / "web"
 
 
-def _toolkit_root() -> Path:
-    env = os.environ.get("HFAH_TOOLKIT_ROOT", "").strip()
-    if env:
-        return Path(env).resolve()
-    sibling = SITE_ROOT.parent / "hedge-fund-at-home"
-    if (sibling / "hedgekit").is_dir():
-        return sibling.resolve()
-    return SITE_ROOT
-
-
-PROJECT_ROOT = _toolkit_root()
+PROJECT_ROOT = toolkit_root()
 
 
 def _ensure_project_context() -> None:
     """Config + strategy imports resolve from toolkit root regardless of caller cwd."""
-    os.chdir(PROJECT_ROOT)
-    cfg = PROJECT_ROOT / "config" / "config.yaml"
+    root = ensure_toolkit_on_path()
+    os.chdir(root)
+    cfg = root / "config" / "config.yaml"
     if cfg.is_file():
         os.environ.setdefault("HFAH_CONFIG", str(cfg))
     try:
-        from ..core.config import get_settings
+        from hedgekit.core.config import get_settings
 
         get_settings.cache_clear()
     except Exception:
@@ -178,6 +171,10 @@ def _run_action(action: str, extra_args: list[str] | None = None, body: dict | N
 
     env = os.environ.copy()
     env.setdefault("PYTHONUNBUFFERED", "1")
+    toolkit = str(PROJECT_ROOT)
+    env["PYTHONPATH"] = (
+        toolkit if not env.get("PYTHONPATH") else f"{toolkit}{os.pathsep}{env['PYTHONPATH']}"
+    )
     try:
         proc = subprocess.run(
             cmd,
