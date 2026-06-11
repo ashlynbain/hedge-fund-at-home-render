@@ -4,11 +4,7 @@ services:
     name: hedge-fund-at-home-learn
     runtime: python
     plan: free
-    buildCommand: |
-      git clone --depth 1 https://github.com/ashlynbain/hedge-fund-at-home.git .toolkit
-      cp .toolkit/config/config.yaml.example .toolkit/config/config.yaml
-      pip install -e ".toolkit[dev]"
-      pip install -e ".[dev]"
+    buildCommand: bash scripts/render_build.sh
     startCommand: python -m hfah_site.cli.api_serve
     healthCheckPath: /api/config
     envVars:

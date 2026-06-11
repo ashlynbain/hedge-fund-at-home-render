@@ -1,3 +1,19 @@
+Metadata-Version: 2.4
+Name: hfah-render
+Version: 0.1.0
+Summary: Public code-lab API for Hedge Fund at Home (Render). No learn UI.
+Author: Ashlyn Bain
+License: MIT
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: click>=8.1
+Requires-Dist: numpy>=1.24
+Requires-Dist: pandas>=2.0
+Requires-Dist: yfinance>=0.2.40
+Provides-Extra: dev
+Requires-Dist: pytest>=8.0; extra == "dev"
+Requires-Dist: ruff>=0.4; extra == "dev"
+
 # Hedge Fund at Home — Render API (public)
 
 Public **API-only** service for the learn site Code lab. Deploy on Render; pair with the private static UI on Hostinger.
@@ -7,17 +23,7 @@ Public **API-only** service for the learn site Code lab. Deploy on Render; pair 
 
 ## Render
 
-Connect this **public** repo in Render → **Blueprint** → `render.yaml`.
-
-If you configure the service manually, set:
-
-| Setting | Value |
-| --- | --- |
-| **Build command** | `bash scripts/render_build.sh` |
-| **Start command** | `python -m hfah_site.cli.api_serve` |
-| **Health check** | `/api/config` |
-
-Do **not** use `cp config/config.yaml.example` — config lives in the cloned `.toolkit/` folder.
+Connect this repo in Render → **Blueprint** → `render.yaml`.
 
 Set `HFAH_CORS_ORIGIN` to your site, e.g. `https://hedgefunddiy.ashlynbain.com`.
 
