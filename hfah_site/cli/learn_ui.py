@@ -14,7 +14,7 @@ from urllib.parse import parse_qs, unquote, urlparse
 
 from hfah_site.learn_assets import WEB_ROOT as _ASSET_WEB_ROOT
 from hfah_site.learn_assets import build_trading_floor_html
-from hfah_site.paths import ensure_toolkit_on_path, toolkit_root
+from hfah_site.paths import ensure_toolkit_on_path, toolkit_root, toolkit_subprocess_env
 
 import click
 
@@ -169,16 +169,12 @@ def _run_action(action: str, extra_args: list[str] | None = None, body: dict | N
             return {"ok": False, "error": "extra_args only allowed for backtest", "stdout": "", "stderr": "", "exit_code": -1}
         cmd.extend(extra_args)
 
-    env = os.environ.copy()
-    env.setdefault("PYTHONUNBUFFERED", "1")
-    toolkit = str(PROJECT_ROOT)
-    env["PYTHONPATH"] = (
-        toolkit if not env.get("PYTHONPATH") else f"{toolkit}{os.pathsep}{env['PYTHONPATH']}"
-    )
+    root = toolkit_root()
+    env = toolkit_subprocess_env()
     try:
         proc = subprocess.run(
             cmd,
-            cwd=str(PROJECT_ROOT),
+            cwd=str(root),
             capture_output=True,
             text=True,
             timeout=180,

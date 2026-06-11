@@ -14,5 +14,7 @@ services:
         value: .toolkit
       - key: HFAH_CONFIG
         value: .toolkit/config/config.yaml
+      - key: PYTHONPATH
+        value: /opt/render/project/src/.toolkit
       - key: HFAH_UI_QUIET
         value: "true"
